@@ -49,8 +49,7 @@ export function Results({
   dados: DadosEntrada;
   r: ResultadoCalculo;
 }) {
-  const As_min = 0.004 * dados.b * dados.h;
-  const As_final = r.As_total < As_min ? As_min : r.As_total;
+  const As_final = r.As_total < r.As_min ? r.As_min : r.As_total;
   const sugestoes = calcularArmaduraComercial(As_final);
 
   return (
@@ -68,10 +67,18 @@ export function Results({
         <Linha label="Area de aco total (As)" valor={`${r.As_total.toFixed(3)} cm²`} destaque />
         <Linha label="Dominio de deformacao" valor={r.dominio} />
         <Linha label="Convergencia f(x)" valor={`${r.f_x.toExponential(2)} ≈ 0`} />
-        {r.As_total < As_min && (
+        <Linha label="As,min (NBR 17.3.5.3.1)" valor={`${r.As_min.toFixed(2)} cm²`} />
+        <Linha label="As,max (8%·Ac)" valor={`${r.As_max.toFixed(2)} cm²`} />
+        {r.As_total < r.As_min && (
           <p className="mt-2 border-l-2 border-amber-500 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-            As calculado &lt; As,min (0,4%·Ac = {As_min.toFixed(2)} cm²). Adotar
-            armadura minima.
+            As calculado &lt; As,min = máx(0,15·Nd/fyd ; 0,4%·Ac) ={" "}
+            {r.As_min.toFixed(2)} cm². Adotar armadura minima.
+          </p>
+        )}
+        {r.As_total > r.As_max && (
+          <p className="mt-2 border-l-2 border-red-500 bg-red-50 px-3 py-2 text-xs text-red-800">
+            As calculado &gt; As,max = 8%·Ac = {r.As_max.toFixed(2)} cm². Seção
+            insuficiente — aumentar as dimensões.
           </p>
         )}
       </Cartao>

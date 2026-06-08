@@ -29,9 +29,10 @@ export function gerarMemorialPDF(
   const margin = 20;
   let y = margin;
 
+  const gamma_f = dados.gamma_f ?? 1.4;
   const gamma_c = dados.gamma_c ?? 1.4;
   const gamma_s = dados.gamma_s ?? 1.15;
-  const As_min = 0.004 * dados.b * dados.h;
+  const As_min = r.As_min;
 
   // ---- Cabecalho ----
   doc.setFont("helvetica", "bold").setFontSize(15).setTextColor("#000");
@@ -87,6 +88,7 @@ export function gerarMemorialPDF(
     [
       ["Resistencia do concreto (fck)", `${dados.fck.toFixed(1)} MPa`],
       ["Tensao do aco (fy)", `${dados.fy.toFixed(0)} MPa`],
+      ["Coef. ponderacao acoes (gf)", gamma_f.toFixed(2)],
       ["Coef. ponderacao concreto (gc)", gamma_c.toFixed(2)],
       ["Coef. ponderacao aco (gs)", gamma_s.toFixed(2)],
     ],
@@ -108,7 +110,7 @@ export function gerarMemorialPDF(
   tabela(
     ["Grandeza", "Calculo", "Resultado"],
     [
-      ["Forca normal (Nd)", `Nk x ${gamma_c} = ${dados.Nk.toFixed(1)} x ${gamma_c}`, `${r.Nd.toFixed(2)} kN`],
+      ["Forca normal (Nd)", `Nk x ${gamma_f} = ${dados.Nk.toFixed(1)} x ${gamma_f}`, `${r.Nd.toFixed(2)} kN`],
       ["Momento fletor (Md)", `Nd x e = ${r.Nd.toFixed(2)} x ${dados.e.toFixed(1)}`, `${r.Md.toFixed(2)} kN.cm`],
     ],
   );
@@ -158,12 +160,15 @@ export function gerarMemorialPDF(
     ["Armadura", "Valor"],
     [
       ["As,total (calculado)", `${r.As_total.toFixed(2)} cm2`],
-      ["As,min (0.4% Ac)", `${As_min.toFixed(2)} cm2`],
+      ["As,min = max(0.15 Nd/fyd ; 0.4% Ac)", `${As_min.toFixed(2)} cm2`],
+      ["As,max = 8% Ac", `${r.As_max.toFixed(2)} cm2`],
       [
         "Situacao",
-        r.As_total < As_min
-          ? "ATENCAO: adotar armadura minima"
-          : "OK: calculada > minima",
+        r.As_total > r.As_max
+          ? "ATENCAO: As > As,max — aumentar a secao"
+          : r.As_total < As_min
+            ? "ATENCAO: adotar armadura minima"
+            : "OK: As,min <= calculada <= As,max",
       ],
     ],
   );

@@ -14,6 +14,14 @@ compressão no concreto:
 
 A escolha do método é feita diretamente na interface.
 
+A base teórica completa (NBR 6118:2014 + apostila do Prof. J. M. Bastos) está em
+[`docs/teoria-dimensionamento-pilar.pdf`](docs/teoria-dimensionamento-pilar.pdf)
+(gerado por [`docs/gerar_teoria.py`](docs/gerar_teoria.py)). Destaques da
+modelagem: `Es = 210 GPa`, parâmetros do diagrama do concreto para os Grupos I
+e II (fck até 90 MPa), pivô correto do Domínio 2 e armaduras mínima/máxima
+conforme o item 17.3.5.3. Escopo: flexo-compressão **reta**, sem efeitos de 2ª
+ordem (a excentricidade `e` informada já deve englobá-los).
+
 > **Todos os cálculos rodam no navegador (client-side).** Nenhum dado é enviado a
 > servidores — o build é estático e pode ser hospedado em qualquer servidor local.
 

@@ -28,7 +28,7 @@ const EXEMPLO: FormState = {
 };
 
 function toDados(s: FormState): DadosEntrada {
-  return { ...s, gamma_c: 1.4 };
+  return { ...s, gamma_f: 1.4, gamma_c: 1.4 };
 }
 
 export default function App() {
