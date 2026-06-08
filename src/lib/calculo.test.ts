@@ -56,6 +56,44 @@ describe("CalculoPilar — exercicio do professor (paridade com Python)", () => 
   });
 });
 
+/**
+ * Valores de referencia do metodo RETANGULAR (bloco simplificado),
+ * capturados do script Python Couto-Dimensionamento-Pilar com a mesma
+ * entrada do exercicio do professor:
+ *   x=24.7722  As=15.7789  Dominio 4  Rcc=481.2884  dc=10.0911
+ *   def=[-0.002935, 0.001586]  tens=[-434.783, 317.269]
+ */
+describe("CalculoPilar — metodo retangular (paridade com Python)", () => {
+  const calc = new CalculoPilar({
+    metodo: "retangular",
+    b: 20,
+    h: 40,
+    cobrimento: 4,
+    camadas: [
+      { nb: 2, d: 4.0 },
+      { nb: 2, d: 36.0 },
+    ],
+    Nk: 410,
+    e: 25,
+    fck: 20,
+    fy: 500,
+    gamma_s: 1.15,
+    x_min: 1,
+    x_max: 30,
+  });
+  const r = calc.resolver();
+
+  it("linha neutra x", () => expect(r.x).toBeCloseTo(24.7722, 3));
+  it("area de aco total As", () => expect(r.As_total).toBeCloseTo(15.7789, 3));
+  it("resultante de compressao Rcc", () => expect(r.Rcc).toBeCloseTo(481.2884, 2));
+  it("posicao da compressao dc", () => expect(r.dc).toBeCloseTo(10.0911, 3));
+  it("dominio de deformacao", () => expect(r.dominio).toBe("Dominio 4"));
+  it("tensoes por camada", () => {
+    expect(r.tensoes[0]).toBeCloseTo(-434.783, 2);
+    expect(r.tensoes[1]).toBeCloseTo(317.269, 2);
+  });
+});
+
 describe("calcularArmaduraComercial", () => {
   it("sugestoes para As=15.8942", () => {
     const s = calcularArmaduraComercial(15.8942);

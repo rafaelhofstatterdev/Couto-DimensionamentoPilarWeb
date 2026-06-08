@@ -3,9 +3,16 @@
 Aplicação web para dimensionamento de pilares de concreto armado de seção
 retangular submetidos à **flexo-compressão reta**, conforme a **NBR 6118:2014**.
 
-Porta para a web do script Python original
-([Couto-Dimensionamento-PilarParabolica](https://github.com/rafaelhofstatterdev/Couto-Dimensionamento-PilarParabolica)),
-mantendo a mesma lógica de cálculo.
+Porta para a web dos scripts Python originais, mantendo a mesma lógica de
+cálculo e oferecendo **dois métodos selecionáveis** para a resultante de
+compressão no concreto:
+
+| Método | Modelo | Precisão | Origem |
+|---|---|---|---|
+| **Parabólico** | Diagrama parábola-retângulo integrado numericamente | Mais preciso | [Couto-Dimensionamento-PilarParabolica](https://github.com/rafaelhofstatterdev/Couto-Dimensionamento-PilarParabolica) |
+| **Retangular** | Bloco simplificado (0,8x de altura, 0,85·fcd uniforme, resultante a 0,4x) | Simplificado | [Couto-Dimensionamento-Pilar](https://github.com/rafaelhofstatterdev/Couto-Dimensionamento-Pilar) |
+
+A escolha do método é feita diretamente na interface.
 
 > **Todos os cálculos rodam no navegador (client-side).** Nenhum dado é enviado a
 > servidores — o build é estático e pode ser hospedado em qualquer servidor local.
@@ -48,9 +55,9 @@ permitir.
 ## Validação
 
 Os testes em [`src/lib/calculo.test.ts`](src/lib/calculo.test.ts) reproduzem o
-"exercício do professor" e conferem os resultados contra os valores gerados pelo
-script Python original (`x`, `As`, `Rcc`, domínio, deformações, tensões e
-bitolas comerciais).
+"exercício do professor" para **os dois métodos** e conferem os resultados
+contra os valores gerados pelos scripts Python originais (`x`, `As`, `Rcc`,
+domínio, deformações, tensões e bitolas comerciais).
 
 ---
 

@@ -128,6 +128,12 @@ export function gerarMemorialPDF(
   tabela(
     ["Equilibrio da secao", "Valor"],
     [
+      [
+        "Metodo de calculo",
+        dados.metodo === "retangular"
+          ? "Retangular (bloco simplificado 0.8x / 0.85fcd)"
+          : "Parabolico (parabola-retangulo, integracao numerica)",
+      ],
       ["Linha neutra (x)", `${r.x.toFixed(3)} cm`],
       ["Dominio", r.dominio],
       ["Rcc (concreto)", `${r.Rcc.toFixed(2)} kN`],

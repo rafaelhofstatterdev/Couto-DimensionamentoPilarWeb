@@ -1,6 +1,7 @@
-import type { Camada } from "../lib/calculo";
+import type { Camada, MetodoCalculo } from "../lib/calculo";
 
 export interface FormState {
+  metodo: MetodoCalculo;
   b: number;
   h: number;
   cobrimento: number;
@@ -94,6 +95,43 @@ export function InputForm({
 
   return (
     <div className="flex flex-col gap-4">
+      <Grupo titulo="Metodo de calculo">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded border border-[var(--color-line)] bg-[var(--color-line)]">
+          {(
+            [
+              ["parabolico", "Parabolico", "Mais preciso"],
+              ["retangular", "Retangular", "Simplificado"],
+            ] as const
+          ).map(([valor, titulo, hint]) => {
+            const ativo = state.metodo === valor;
+            return (
+              <button
+                key={valor}
+                type="button"
+                onClick={() => set({ metodo: valor })}
+                className={`flex flex-col items-center px-3 py-2 text-sm transition-colors ${
+                  ativo
+                    ? "bg-[var(--color-institutional)] text-white"
+                    : "bg-white text-[var(--color-muted)] hover:bg-[var(--color-subtle)]"
+                }`}
+              >
+                <span className="font-serif font-bold">{titulo}</span>
+                <span
+                  className={`text-[11px] ${ativo ? "text-white/75" : "text-[var(--color-line)]"}`}
+                >
+                  {hint}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-[11px] leading-snug text-[var(--color-muted)]">
+          {state.metodo === "parabolico"
+            ? "Diagrama parabola-retangulo integrado numericamente (NBR 6118)."
+            : "Bloco retangular simplificado: 0,8x de altura e 0,85·fcd uniforme."}
+        </p>
+      </Grupo>
+
       <Grupo titulo="Geometria da secao">
         <Campo label="Largura b" unidade="cm" value={state.b} onChange={(v) => set({ b: v })} />
         <Campo label="Altura h" unidade="cm" value={state.h} onChange={(v) => set({ h: v })} />

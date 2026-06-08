@@ -11,6 +11,15 @@
 
 import { adaptiveSimpson, brentq, minimizeScalarBounded } from "./numerics";
 
+/**
+ * Metodo de calculo da resultante de compressao no concreto:
+ * - "parabolico": diagrama parabola-retangulo integrado numericamente
+ *   (mais preciso — repo Couto-Dimensionamento-PilarParabolica).
+ * - "retangular": bloco retangular simplificado 0.8x / 0.85fcd
+ *   (simplificado — repo Couto-Dimensionamento-Pilar).
+ */
+export type MetodoCalculo = "parabolico" | "retangular";
+
 /** Uma camada de armadura. */
 export interface Camada {
   /** numero de barras */
@@ -29,6 +38,7 @@ export interface DadosEntrada {
   e: number; // excentricidade (cm)
   fck: number; // resistencia caracteristica do concreto (MPa)
   fy: number; // tensao de escoamento do aco (MPa)
+  metodo?: MetodoCalculo; // modelo do diagrama do concreto (default "parabolico")
   gamma_c?: number; // coef. de seguranca do concreto (default 1.4)
   gamma_s?: number; // coef. de seguranca do aco (default 1.15)
   x_min?: number; // limite inferior para x (cm)
@@ -98,6 +108,7 @@ export class CalculoPilar {
 
   constructor(dados: DadosEntrada) {
     this.dados = {
+      metodo: "parabolico",
       gamma_c: 1.4,
       gamma_s: 1.15,
       x_min: 1.0,
@@ -147,11 +158,28 @@ export class CalculoPilar {
 
   /**
    * Resultante de compressao no concreto (Rcc, kN) e a distancia z_c (cm)
-   * do seu ponto de aplicacao ao CG da secao, via integracao numerica.
+   * do seu ponto de aplicacao ao CG da secao. Despacha para o modelo
+   * escolhido (parabola-retangulo ou bloco retangular simplificado).
    */
   calcularRcc(x: number): [number, number] {
     if (x <= 0) return [0.0, 0.0];
+    return this.dados.metodo === "retangular"
+      ? this.calcularRccRetangular(x)
+      : this.calcularRccParabolico(x);
+  }
 
+  /**
+   * Bloco retangular simplificado (NBR 6118): altura comprimida 0.8x,
+   * tensao uniforme 0.85*fcd, resultante a 0.4x do bordo comprimido.
+   */
+  private calcularRccRetangular(x: number): [number, number] {
+    const Rcc = (0.8 * this.dados.b * x * 0.85 * this.fcd) / 10; // kN
+    const zC = this.dados.h / 2 - 0.4 * x;
+    return [Rcc, zC];
+  }
+
+  /** Diagrama parabola-retangulo integrado numericamente (modelo preciso). */
+  private calcularRccParabolico(x: number): [number, number] {
     const limiteIntegracao = Math.min(x, this.dados.h);
     const dMax = Math.max(...this.dados.camadas.map((c) => c.d));
 

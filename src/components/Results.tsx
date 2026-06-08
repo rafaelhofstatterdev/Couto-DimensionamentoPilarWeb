@@ -56,6 +56,14 @@ export function Results({
   return (
     <div className="flex flex-col gap-4">
       <Cartao titulo="Sintese">
+        <Linha
+          label="Metodo de calculo"
+          valor={
+            dados.metodo === "retangular"
+              ? "Retangular (simplificado)"
+              : "Parabolico (preciso)"
+          }
+        />
         <Linha label="Linha neutra (x)" valor={`${r.x.toFixed(3)} cm`} />
         <Linha label="Area de aco total (As)" valor={`${r.As_total.toFixed(3)} cm²`} destaque />
         <Linha label="Dominio de deformacao" valor={r.dominio} />

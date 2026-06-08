@@ -10,6 +10,7 @@ import { Results } from "./components/Results";
 import { SectionDrawing } from "./components/SectionDrawing";
 
 const EXEMPLO: FormState = {
+  metodo: "parabolico",
   b: 20,
   h: 40,
   cobrimento: 4,
